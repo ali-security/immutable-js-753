@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import {
   Collection,
   isIndexed,
@@ -10,7 +11,6 @@ import {
   Seq,
   Set,
 } from 'immutable';
-import { describe, expect, it } from '@jest/globals';
 
 describe('toSeq', () => {
   it('returns a keyed Seq for a keyed collection, preserving entries', () => {
