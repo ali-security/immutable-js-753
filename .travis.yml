@@ -1,3 +1,19 @@
 language: node_js
 
 sudo: false
+
+node_js:
+  - "4"
+
+before_install:
+  - pyenv install 2.7.18
+  - npm config set python /opt/pyenv/versions/2.7.18/bin/python
+
+install:
+  - npm install --ignore-scripts
+  - npm rebuild contextify
+  - npm install grunt-cli --ignore-scripts
+  - ./node_modules/.bin/grunt build
+
+script:
+  - for f in __tests__/*.ts __tests__/*.js contrib/cursor/__tests__/*.ts; do echo "--- $f ---" && node --harmony node_modules/.bin/jest --testPathPattern "/$(basename $f)$" -i || exit 1; done

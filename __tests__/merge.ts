@@ -142,4 +142,32 @@ describe('merge', () => {
     expect(m2.getIn(['a', 'b', 0])).toEqual({plain: 'obj'});
   })
 
+  it('is not sensible to prototype pollution', () => {
+    var m1 = I.fromJS({user: 'Alice'});
+    var m2 = I.Map().set('__proto__', I.Map({ admin: true }));
+
+    var r1 = m1.mergeDeep(m2);
+    expect((<any>r1.toJS()).admin).toBeUndefined();
+
+    var r2 = m1.mergeDeepWith(function(a, b) { return b; }, m2);
+    expect((<any>r2.toJS()).admin).toBeUndefined();
+
+    var r3 = m1.merge(m2);
+    expect((<any>r3.toJS()).admin).toBeUndefined();
+
+    expect((<any>{}).admin).toBeUndefined();
+  })
+
+  it('is not sensible to prototype pollution via fromJS + JSON.parse', () => {
+    var userProfile = I.fromJS({user: 'Alice'});
+    var requestBody = I.fromJS(JSON.parse('{"user":"Eve","__proto__":{"admin":true}}'));
+
+    var r1 = userProfile.mergeDeep(requestBody);
+    expect(r1.get('user')).toBe('Eve');
+    expect((<any>r1.toJS()).admin).toBeUndefined();
+    expect((<any>r1.toObject()).admin).toBeUndefined();
+
+    expect((<any>{}).admin).toBeUndefined();
+  })
+
 })

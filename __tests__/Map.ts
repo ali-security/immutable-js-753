@@ -322,4 +322,10 @@ describe('Map', () => {
     expect(Immutable.is(m1, m2)).toBe(true);
   });
 
+  it('toJS / toObject are not sensible to prototype pollution', () => {
+    var m = (<any>Map({ user: 'alice' })).set('__proto__', Map({ admin: true }));
+    expect((<any>m.toObject()).admin).toBeUndefined();
+    expect((<any>m.toJS()).admin).toBeUndefined();
+  });
+
 });
